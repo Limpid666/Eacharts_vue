@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     initChart() {
-      this.chartInstance = this.$echarts.init(this.$refs.sellerRef)
+      this.chartInstance = this.$echarts.init(this.$refs.sellerRef, 'chalk')
       // 鼠标事件的监听
       this.chartInstance.on('mouseover', () => {
         clearInterval(this.timerId)
@@ -62,7 +62,59 @@ export default {
           type: 'category',
           data: sellerNames
         },
-        series: [{ type: 'bar', data: sellerValues }]
+        title: {
+          text: '▎商家销售统计',
+          textStyle: {
+            fontSize: 55
+          },
+          left: 20,
+          top: 20
+        },
+        grid: {
+          top: '20%',
+          left: '3%',
+          bottom: '3%',
+          right: '6%',
+          containLabel: true
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'line',
+            z: 0,
+            lineStyle: {
+              width: 66,
+              color: '#2D3443'
+            }
+          }
+        },
+        series: [
+          {
+            type: 'bar',
+            data: sellerValues,
+            barWidth: 66,
+            label: {
+              show: true,
+              position: 'right',
+              textStyle: {
+                color: '#fff'
+              }
+            },
+            itemStyle: {
+              barBorderRadius: [0, 35, 35, 0],
+              color: new this.$echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                {
+                  offset: 0,
+                  color: '#5052EE'
+                },
+                {
+                  offset: 1,
+                  color: '#AB6EE5'
+                }
+              ])
+            }
+          }
+        ]
       }
       this.chartInstance.setOption(option)
     },
