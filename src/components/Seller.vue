@@ -19,10 +19,66 @@ export default {
   },
   destroyed() {
     this.clearInterval(this.timerId)
+    window.removeEventListener('resize', this.screenAdapter)
   },
   methods: {
     initChart() {
       this.chartInstance = this.$echarts.init(this.$refs.sellerRef, 'chalk')
+      const initOption = {
+        xAxis: {
+          type: 'value'
+        },
+        yAxis: {
+          type: 'category'
+        },
+        title: {
+          text: '▎商家销售统计',
+          left: 20,
+          top: 20
+        },
+        grid: {
+          top: '20%',
+          left: '3%',
+          bottom: '3%',
+          right: '6%',
+          containLabel: true
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'line',
+            z: 0,
+            lineStyle: {
+              color: '#2D3443'
+            }
+          }
+        },
+        series: [
+          {
+            type: 'bar',
+            label: {
+              show: true,
+              position: 'right',
+              textStyle: {
+                color: '#fff'
+              }
+            },
+            itemStyle: {
+              color: new this.$echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                {
+                  offset: 0,
+                  color: '#5052EE'
+                },
+                {
+                  offset: 1,
+                  color: '#AB6EE5'
+                }
+              ])
+            }
+          }
+        ]
+      }
+      this.chartInstance.setOption(initOption)
       // 鼠标事件的监听
       this.chartInstance.on('mouseover', () => {
         clearInterval(this.timerId)
@@ -54,69 +110,17 @@ export default {
       // 基础实现
       const sellerNames = showData.map((item) => item.name)
       const sellerValues = showData.map((item) => item.value)
-      const option = {
-        xAxis: {
-          type: 'value'
-        },
+      const dataOption = {
         yAxis: {
-          type: 'category',
           data: sellerNames
-        },
-        title: {
-          text: '▎商家销售统计',
-          textStyle: {
-            fontSize: 55
-          },
-          left: 20,
-          top: 20
-        },
-        grid: {
-          top: '20%',
-          left: '3%',
-          bottom: '3%',
-          right: '6%',
-          containLabel: true
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'line',
-            z: 0,
-            lineStyle: {
-              width: 66,
-              color: '#2D3443'
-            }
-          }
         },
         series: [
           {
-            type: 'bar',
-            data: sellerValues,
-            barWidth: 66,
-            label: {
-              show: true,
-              position: 'right',
-              textStyle: {
-                color: '#fff'
-              }
-            },
-            itemStyle: {
-              barBorderRadius: [0, 35, 35, 0],
-              color: new this.$echarts.graphic.LinearGradient(0, 0, 1, 0, [
-                {
-                  offset: 0,
-                  color: '#5052EE'
-                },
-                {
-                  offset: 1,
-                  color: '#AB6EE5'
-                }
-              ])
-            }
+            data: sellerValues
           }
         ]
       }
-      this.chartInstance.setOption(option)
+      this.chartInstance.setOption(dataOption)
     },
     startInterval() {
       if (this.timerId) {
@@ -129,12 +133,41 @@ export default {
         }
         this.updataChart()
       }, 3000)
+    },
+    screenAdapter() {
+      const titleFontSize = (this.$refs.sellerRef.offsetWidth / 100) * 3.6
+      console.log(titleFontSize)
+      const adapterOption = {
+        title: {
+          textStyle: {
+            fontSize: titleFontSize
+          }
+        },
+        tooltip: {
+          lineStyle: {
+            width: titleFontSize
+          }
+        },
+        series: [
+          {
+            barWidth: titleFontSize,
+            itemStyle: {
+              barBorderRadius: [0, titleFontSize / 2, titleFontSize / 2, 0]
+            }
+          }
+        ]
+      }
+      this.chartInstance.setOption(adapterOption)
+      this.chartInstance.resize()
     }
   },
   created() {},
   mounted() {
     this.initChart()
     this.getData()
+    window.addEventListener('resize', this.screenAdapter)
+    // 在页面加载完成的时候, 主动进行屏幕的适配
+    this.screenAdapter()
   }
 }
 </script>
