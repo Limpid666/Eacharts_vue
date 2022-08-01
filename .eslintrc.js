@@ -21,6 +21,7 @@ module.exports = {
     'no-void': 'off',
     eqeqeq: 'off',
     // eslint-disable-next-line no-dupe-keys
-    'no-sequences': 'off'
+    'no-sequences': 'off',
+    'no-unused-vars': 'off'
   }
 }
