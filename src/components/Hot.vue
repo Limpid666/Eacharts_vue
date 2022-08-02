@@ -1,4 +1,4 @@
-/* 澈澈 */
+/* 澈澈 */ /* -- 热销商品销售金额占比统计 -- */
 <template>
   <div class="com-container">
     <div class="com-chart" ref="hotRef"></div>
