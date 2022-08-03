@@ -19,6 +19,7 @@ export default {
   },
   destroyed() {
     window.removeEventListener('resize', this.screenAdapter)
+    this.$socket.unRegisterCallBack('mapData')
   },
   methods: {
     async initChart() {
@@ -69,8 +70,8 @@ export default {
       }
       this.chartInstance.setOption(initOption)
     },
-    async getData() {
-      const { data: ret } = await this.$http.get('map')
+    getData(ret) {
+      // const { data: ret } = await this.$http.get('map')
       this.allData = ret
       console.log(this.allData)
       this.updataChart()
@@ -129,10 +130,18 @@ export default {
       this.chartInstance.setOption(revertOption)
     }
   },
-  created() {},
+  created() {
+    this.$socket.registerCallBack('mapData', this.getData)
+  },
   mounted() {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'mapData',
+      chartName: 'map',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   }

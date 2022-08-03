@@ -25,6 +25,7 @@ export default {
   },
   destroyed() {
     window.removeEventListener('resize', this.screenAdapter)
+    this.$socket.unRegisterCallBack('hotproductData')
   },
   methods: {
     toLeft() {
@@ -84,8 +85,8 @@ export default {
       }
       this.chartInstance.setOption(initOption)
     },
-    async getData() {
-      const { data: ret } = await this.$http.get('hotproduct')
+    getData(ret) {
+      // const { data: ret } = await this.$http.get('hotproduct')
       this.allData = ret
       console.log(this.allData)
       this.updataChart()
@@ -138,10 +139,18 @@ export default {
       this.chartInstance.setOption(adapterOption)
     }
   },
-  created() {},
+  created() {
+    this.$socket.registerCallBack('hotproductData', this.getData)
+  },
   mounted() {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'hotproductData',
+      chartName: 'hotproduct',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },

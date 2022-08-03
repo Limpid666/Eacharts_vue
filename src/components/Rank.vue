@@ -20,6 +20,7 @@ export default {
   destroyed() {
     window.removeEventListener('resize', this.screenAdapter)
     clearInterval(this.timerId)
+    this.$socket.unRegisterCallBack('rankData')
   },
   methods: {
     initChart() {
@@ -62,8 +63,8 @@ export default {
         this.startInterval()
       })
     },
-    async getData() {
-      const { data: ret } = await this.$http.get('rank')
+    getData(ret) {
+      // const { data: ret } = await this.$http.get('rank')
       this.allData = ret
       console.log(this.allData)
       // 排序
@@ -156,10 +157,18 @@ export default {
       }, 2000)
     }
   },
-  created() {},
+  created() {
+    this.$socket.registerCallBack('rankData', this.getData)
+  },
   mounted() {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'rankData',
+      chartName: 'rank',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     // 在页面加载完成的时候, 主动进行屏幕的适配
     this.screenAdapter()

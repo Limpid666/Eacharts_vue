@@ -20,6 +20,7 @@ export default {
   destroyed() {
     this.clearInterval(this.timerId)
     window.removeEventListener('resize', this.screenAdapter)
+    this.$socket.unRegisterCallBack('sellerData')
   },
   methods: {
     initChart() {
@@ -87,8 +88,8 @@ export default {
         this.startInterval()
       })
     },
-    async getData() {
-      const { data: ret } = await this.$http.get('seller')
+    getData(ret) {
+      // const { data: ret } = await this.$http.get('seller')
       this.allData = ret
       this.allData.sort((a, b) => {
         return a.value - b.value
@@ -164,7 +165,13 @@ export default {
   created() {},
   mounted() {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'sellerData',
+      chartName: 'seller',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     // 在页面加载完成的时候, 主动进行屏幕的适配
     this.screenAdapter()

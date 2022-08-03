@@ -39,6 +39,7 @@ export default {
   },
   destroyed() {
     window.removeEventListener('resize', this.screenAdapter)
+    this.$socket.unRegisterCallBack('trendData')
   },
   methods: {
     initChart() {
@@ -73,10 +74,10 @@ export default {
       }
       this.chartInstance.setOption(initOption)
     },
-    async getData() {
-      const { data: ret } = await this.$http.get('trend')
-      console.log(ret)
+    getData(ret) {
+      // const { data: ret } = await this.$http.get('trend')
       this.allData = ret
+      console.log(this.allData)
       this.updateChart()
     },
     updateChart() {
@@ -154,10 +155,18 @@ export default {
       this.showChoice = false
     }
   },
-  created() {},
+  created() {
+    this.$socket.registerCallBack('trendData', this.getData)
+  },
   mounted() {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'trendData',
+      chartName: 'trend',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     this.screenAdapter()
   },

@@ -35,8 +35,8 @@ export default {
         this.startInterval()
       })
     },
-    async getData() {
-      const { data: ret } = await this.$http.get('stock')
+    getData(ret) {
+      // const { data: ret } = await this.$http.get('stock')
       this.allData = ret
       console.log(this.allData)
       this.updateChart()
@@ -173,13 +173,20 @@ export default {
   created() {},
   mounted() {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'stockData',
+      chartName: 'stock',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     // 在页面加载完成的时候, 主动进行屏幕的适配
     this.screenAdapter()
   },
   destroyed() {
     window.removeEventListener('resize', this.screenAdapter)
+    this.$socket.unRegisterCallBack('stockData')
   }
 }
 </script>
